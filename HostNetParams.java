@@ -175,4 +175,60 @@ public class HostNetParams {
         }
         return theResult;
     }
+    
+    /*************************************
+     * this method:
+     *  takes the byte array
+     *      representing the IP number
+     *  translates it to a binary number
+     *************************************/
+    private static String binaryArrayToIP(byte[] IPBytesArray){
+        String ipAddress = "";
+        
+        for (int i=0;i<IPBytesArray.length;i++){
+            StringBuilder binaryValue = new StringBuilder("00000000");
+            
+            for (int bit=0;bit < 8; bit++){
+                if( ((IPBytesArray[i] >> 1) & 1) > 0){
+                    binaryValue.setCharAt(7-bit, '1');
+                }
+            }
+            ipAddress += binaryValue;
+        }
+        return ipAddress;
+    }
+    
+    /*******************************
+     * this method:
+     *  performs a logical &&(AND)
+     *  on two binary strings
+     *******************************/
+    private String logicalANDComparison(String first_str, String second_str){
+        String theResult = "";
+        
+        if( ! (first_str.length() == second_str.length()) ){
+            return "";
+        } else {
+            for (int i=0;i < first_str.length();i++){
+                if ("1".equals(first_str.substring(i, i+1)) && "1".equals(second_str.substring(i, i+1))) {
+                    theResult += "1";
+                } else {
+                    theResult += "0";
+                }
+            }
+        }
+        return theResult;
+    }
+    
+    /**************************************
+     * this method:
+     *  translates the host's subnet mask
+     *  to it's CIDR notation
+     * @param theSubMask
+     * @return 
+     **************************************/
+    public static String toCIDR(InetAddress theSubMask){
+        String subMaskString = binaryArrayToIP(theSubMask.getAddress());
+        return "/" + subMaskString.replace("0", "").trim().length();
+    }
 }
