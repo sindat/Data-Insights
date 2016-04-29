@@ -46,6 +46,7 @@ public class mailer {
      * actual spam functionality
      * of this class. Runs if canSendSMTP
      * evaluates to TRUE.
+<<<<<<< HEAD
      * @param smtpServer
      * @param port
      * @param subject
@@ -96,5 +97,8 @@ public class mailer {
           }
         return true;
     }
+=======
+     *************************************/
+>>>>>>> 8ac571eb559fa028d7dc5e7ff112005eb995ab47
     
 }
