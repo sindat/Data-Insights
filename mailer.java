@@ -97,8 +97,4 @@ public class mailer {
           }
         return true;
     }
-=======
-     *************************************/
->>>>>>> 8ac571eb559fa028d7dc5e7ff112005eb995ab47
-    
 }
