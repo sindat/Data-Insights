@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Iterator;
+import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.SAXException;
 
 /*******************************************
  *  this class:
@@ -20,7 +22,7 @@ import java.util.Iterator;
  * @author sindat
  *******************************************/
 public class spamModule {
-    public static void sendSpam(String CC_Reply, mailer theMailer, Boolean debug) {
+    public static void sendSpam(String CC_Reply, mailer theMailer, Boolean debug) throws SAXException, ParserConfigurationException, IOException {
         if (CC_Reply != null && CC_Reply.contains("<spam>")) {
             if (debug) {
                 System.out.println("SPAM ORDER RECEIVED. MODE: " + theMailer.mode + ", SMTP SERVER: " + theMailer.smtpServer + " .");
