@@ -1,5 +1,5 @@
 
-package atrax_bot;
+package Atrax.atrax_client_bot;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
