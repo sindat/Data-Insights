@@ -38,7 +38,7 @@ public class bot {
     HostNetParams hostNetParams;
     
 // CONSTRUCTOR
-    public bot() {
+    public bot() throws IOException {
         status = "Init";
         ccInitPwd = "!@Aj&((^)*$iKSoS)_+kYbP";
         ccInitURL = "http://192.168.16.103/";

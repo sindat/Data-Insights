@@ -1,18 +1,17 @@
 
 package atrax_bot;
 
-import com.sun.prism.impl.Disposer.Record;
 import java.io.IOException;
-import java.lang.ProcessBuilder.Redirect.Type;
-import java.lang.invoke.MethodHandles.Lookup;
+import java.net.InetAddress;
+import org.xbill.DNS.Lookup;
+import org.xbill.DNS.MXRecord;
+import org.xbill.DNS.Record;
+import org.xbill.DNS.TextParseException;
+import org.xbill.DNS.Type;
+
 import jpcap.JpcapCaptor;
 import jpcap.NetworkInterface;
 import jpcap.NetworkInterfaceAddress;
-
-import org.xbill.DNS.*;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 /***********************************************************
  * this class:
  *   determines the network parameters of the target host
@@ -86,9 +85,10 @@ public class HostNetParams {
         NetworkInterface[] devices = JpcapCaptor.getDeviceList();
         mainInterfaceID = -1;
         
-        for (NetworkInterface device : devices) {
-            if (device.name.contains((mainInterfaceName))){
-                mainInterfaceID = device;
+        for (int i=0;i<devices.length;i++) {
+            if (devices[i].name.contains((mainInterfaceName))){
+                mainInterfaceID = i;
+            } else {
             }
         }
         // get the IP address from the main interface line
@@ -104,8 +104,8 @@ public class HostNetParams {
         
         // get the network address
          mainInterfaceNetwork = InetAddress.getByName(binaryStringToIP
-                            (logicalAND(ipToBinary(mainInterfaceIP.getAddress()),
-                                    ipToBinary(mainInterfaceSubnetMask.getAddress()))));
+                            (logicalANDComparison(binaryArrayToIP(mainInterfaceIP.getAddress()),
+                                    binaryArrayToIP(mainInterfaceSubnetMask.getAddress()))));
     }
     
     /************************************************
@@ -133,15 +133,14 @@ public class HostNetParams {
      *  where the host resides
      * @param theDomain
      * @return 
+     * @throws org.xbill.DNS.TextParseException 
      ************************************/
-    public String findSMTPserver(String theDomain){
+    public String findSMTPserver(String theDomain) throws TextParseException{
         String SMTPserver = null;
         int preference = 1000;
         
         Record[] records = null;
-        try {
-            records = new Lookup(theDomain, Type.MX).run();
-        } catch (TextParseException e){}
+        records = new Lookup(theDomain, Type.MX).run();
         
         if (records != null) {
             for (Record record : records) {
