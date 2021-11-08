@@ -1,1 +1,1 @@
-# base code taken from the SANS 2011 BYOB reading
+# A site helping resellers and companies with revenue growth, new product discovery and international expansion.
