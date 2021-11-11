@@ -1,0 +1,143 @@
+use covid_data_research;
+
+-- GET RID OF TIMESTAMPS ON SaleDate
+--ALTER TABLE MASTERDATA_HOUSING_NASHVILLE
+--ADD SaleDateNoTimestamp Date
+--UPDATE MASTERDATA_HOUSING_NASHVILLE
+--SET SaleDateNoTimestamp = CONVERT(DATE,SaleDate)
+
+-- FILL IN MISSING ADDRESS DATA IF IDENTICAL HOUSE WITH ADDRESS IS FOUND
+--SELECT
+--	a.[UniqueID ],a.ParcelID, a.PropertyAddress, b.[UniqueID ],b.ParcelID, b.PropertyAddress
+--FROM MASTERDATA_HOUSING_NASHVILLE a
+--JOIN MASTERDATA_HOUSING_NASHVILLE b
+--	ON
+--	a.ParcelID = b.ParcelID
+--	AND a.[UniqueID] <> b.[UniqueID]
+--WHERE b.PropertyAddress IS NULL
+
+--BEGIN TRAN
+--UPDATE a
+--SET a.PropertyAddress = b.PropertyAddress
+--FROM MASTERDATA_HOUSING_NASHVILLE a
+--JOIN MASTERDATA_HOUSING_NASHVILLE b
+--	ON
+--	a.ParcelID = b.ParcelID
+--	AND
+--	a.[UniqueID ] <> b.[UniqueID ]
+--WHERE a.PropertyAddress IS NULL
+--COMMIT
+
+
+-- SEPARATE PropertyAddress INTO STREET AND CITY
+--SELECT
+--	TOP 10
+--	SUBSTRING(PropertyAddress, 1, CHARINDEX(',', PropertyAddress) - 1) as 'Street',
+--	SUBSTRING(PropertyAddress, CHARINDEX(',', PropertyAddress) + 1, LEN(PropertyAddress)) as 'City'
+
+--FROM MASTERDATA_HOUSING_NASHVILLE
+
+-- ADD THE NEW TABLE COLUMNS THAT HAVE THE STREET AND CITY ATTRIBUTES
+--ALTER TABLE MASTERDATA_HOUSING_NASHVILLE
+--ADD Street NVARCHAR(255)
+
+--ALTER TABLE MASTERDATA_HOUSING_NASHVILLE
+--ADD City NVARCHAR(255)
+
+--UPDATE MASTERDATA_HOUSING_NASHVILLE
+--SET Street = SUBSTRING(PropertyAddress, 1, CHARINDEX(',', PropertyAddress) - 1)
+
+--UPDATE MASTERDATA_HOUSING_NASHVILLE
+--SET City = SUBSTRING(PropertyAddress, CHARINDEX(',', PropertyAddress) + 1, LEN(PropertyAddress))
+
+
+-- SEPARATE OUT THE OWNER'S ADDRESS INTO 3 PARTS, CURRENTLY IT IS IN ONE ROW SEPARATED BY A COMMA
+-- STREET, CITY, STATE
+--SELECT
+--	TOP 100
+--	PARSENAME(REPLACE(OwnerAddress, ',', '.'),3),
+--	PARSENAME(REPLACE(OwnerAddress, ',', '.'),2),
+--	PARSENAME(REPLACE(OwnerAddress, ',', '.'),1)
+--FROM
+--	MASTERDATA_HOUSING_NASHVILLE
+
+--ALTER TABLE MASTERDATA_HOUSING_NASHVILLE
+--ADD OwnerAddressStreet VARCHAR(255)
+
+--ALTER TABLE MASTERDATA_HOUSING_NASHVILLE
+--ADD OwnerAddressCity VARCHAR(255)
+
+--ALTER TABLE MASTERDATA_HOUSING_NASHVILLE
+--ADD OwnerAddressState VARCHAR(255)
+
+--UPDATE MASTERDATA_HOUSING_NASHVILLE
+--SET OwnerAddressStreet = PARSENAME(REPLACE(OwnerAddress, ',', '.'),3)
+
+
+-- REGULATE TERMS - IN THIS CASE YES AND NO
+-- FIND OUT WHICH ONES ARE MORE USED AND TRANSFER THE OTHER ONES INTO THE SAME FORMAT
+--SELECT SoldAsVacant, Count(*)
+--FROM MASTERDATA_HOUSING_NASHVILLE
+--GROUP BY SoldAsVacant
+--ORDER BY 2
+
+--SELECT SoldAsVacant,
+
+--	CASE When SoldAsVacant = 'Y' THEN 'Yes'
+--		 When SoldAsVacant = 'N' THEN 'No'
+--	ELSE
+--		SoldAsVacant
+--	END
+
+--FROM MASTERDATA_HOUSING_NASHVILLE
+
+--UPDATE MASTERDATA_HOUSING_NASHVILLE
+--SET
+--	SoldAsVacant =
+--		CASE When SoldAsVacant = 'Y' THEN 'Yes'
+--			 When SoldAsVacant = 'N' THEN 'No'
+--		ELSE
+--			SoldAsVacant
+--		END
+
+--SELECT SoldAsVacant
+--FROM MASTERDATA_HOUSING_NASHVILLE
+--WHERE SoldAsVacant = 'N'
+
+--SELECT
+--	SoldAsVacant,
+--	Count(*)
+--FROM MASTERDATA_HOUSING_NASHVILLE
+--GROUP BY SoldAsVacant
+
+
+
+-- REMOVING DUPLICATES -- NOTE TODO - STORE THE REMOVED VALUES IN A TEMP TABLE TO PREVENT DATA LOSS
+-- ALL ROWS WITH COUNTED ROW GREATER THAN 1 MEAN THEY ARE THERE MULTIPLE TIMES AS PER THE PARTITION PARAMETERS
+--WITH EliminateDuplicatesWithRowCount AS(
+
+--SELECT 
+--	*,
+--	ROW_NUMBER() OVER (
+--		PARTITION BY ParcelID,
+--					PropertyAddress,
+--					SalePrice,
+--					SaleDate,
+--					LegalReference
+--					ORDER BY UniqueID
+--	) row_to_eliminate_as_duplicate 
+
+--FROM MASTERDATA_HOUSING_NASHVILLE
+--)
+
+--SELECT * FROM EliminateDuplicatesWithRowCount
+--WHERE row_to_eliminate_as_duplicate != 1
+
+--DELETE FROM EliminateDuplicatesWithRowCount
+--WHERE row_to_eliminate_as_duplicate != 1
+
+
+
+-- REMOVE UNUSED COLUMNS
+--ALTER TABLE MASTERDATA_HOUSING_NASHVILLE
+--DROP COLUMN SaleDate
