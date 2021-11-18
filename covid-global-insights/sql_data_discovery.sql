@@ -3,9 +3,13 @@
 use covid_data_research
 GO
 
-/************************
+
+
+/******************************************
 	DATA DISCOVERIES
-*************************/
+*******************************************/
+
+
 
 -- 1 - DISCOVERY - LIKELIHOOD OF DYING IF CONTRACTED COVID IN SAID COUNTRY
 SELECT
@@ -133,10 +137,10 @@ FROM
 
 
 
-
-/************************
+/******************************************
 	DATA STORAGE OPTIONS
-*************************/
+*******************************************/
+
 
 
 -- OPTION 1 - INSERTING DATA FROM A TEMP TABLE INTO A NEW TABLE TO PRESERVE THE SELECTED DATA
